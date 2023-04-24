@@ -23,7 +23,7 @@ The workout specification is textual, more concise and much simpler than a Zwift
 30m@200w | 250w
 ```
 
-The first part `30m@200w` specifies a duration of 30 minutes at 200 watts. The second part `| 250w` declares your FTP value, which would be 250 watts in this example.
+The first part `30m@200w` specifies a duration of 30 minutes at 200 watts. The second part `| 250w` declares your FTP value, which would be 250 watts in this example. For the unit of watts, you can use `w` or `W`.
 
 If you want to start your workout with a warm-up and cool-down phase, you can specify power ranges. Let's assume you want to start by gradually increasing your power from 100 watts to 190 watts over 10 minutes and after your main set of 30 minutes at 200 watts you want to decrease your power from 190 watts down to 150 watts in 5 minutes. You could specify this workout as follows:
 
@@ -54,3 +54,11 @@ This workout is equivalent to:
 ```
 5m@180w + 9*(10s@300w + 20s@290 + 30s@100w) + 5m@180w + 9*(10s@300w + 30s@290 + 30s@100w)| 250w
 ```
+
+If you want to have a free ride in your workout, you can use `_` instead of a concrete wattage or wattage ramp. To have a 30-minute free ride with no power obligation, you can write:
+
+```
+30m@_ | 250w
+```
+
+Note that there is no `w` after the `_` and you still need to specify your FTP (you would hardly create a Zwift workout consisting of only free rides).
