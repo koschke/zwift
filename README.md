@@ -61,4 +61,4 @@ If you want to have a free ride in your workout, you can use `_` instead of a co
 30m@_ | 250w
 ```
 
-Note that there is no `w` after the `_` and you still need to specify your FTP (you would hardly create a Zwift workout consisting of only free rides).
+Note that there is no `w` or `W` after the `_`.  Note also that you still need to specify your FTP even though this workout example consists of only a single free ride where an FTP value does not really matter. Yet, you would hardly create a Zwift workout consisting of only free rides, would you? And if there is a concrete power specification, the absolute number must be turned into a relative value for the said technical limitation of the Zwift workout format.
