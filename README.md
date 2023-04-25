@@ -23,7 +23,7 @@ The workout specification is textual, more concise and much simpler than a Zwift
 30m@200w | 250w
 ```
 
-Isn't that simple? The first part `30m@200w` specifies a duration of 30 minutes at 200 watts. The second part `| 250w` declares your FTP value, which would be 250 watts in this example. For the unit of watts, you can use `w` or `W`.
+Isn't that simple? The first part `30m@200w` specifies a duration of 30 minutes at 200 watts. The second part `| 250w` declares your FTP value, which would be 250 watts in this example. For the unit of watts, you can use `w` or `W`. Power data must always integer values, that is, you must not use a decimal point. For instance, `100.5w` is invalid.
 
 The blanks in the workout specifications have no meaning and are only a matter of your taste about readability. You could as well write:
 
@@ -37,7 +37,9 @@ If you want to start your workout with a warm-up and cool-down phase, you can sp
 10m@100w-190w + 30m@200w + 5m@190w-150w| 250w
 ```
 
-As you can see, differents sets are separated by `+`.
+A power range is defined by starting and ending power separated by a `-`, e.g., `100w-190w` increases from 100 watts to 190 watts. Note that you need to specify the watt unit (`w` or `W`) for both the starting and ending power. If the starting power is lower than the ending power, as in `190w-150w`, power will decrease over the specified duration.
+
+As you can see in this example, too, different sets are separated by `+`.
 
 Now let's assume we want a classic 30/30 interval with 9 repeats instead of the steady 200 watts over 30 minutes. A 30/30 interval is an effort with 30 seconds at high power, let's say 290 watts, followed by a 30-second rest at low power, let's say 100 watts. This can be specified as follows:
 
@@ -45,7 +47,7 @@ Now let's assume we want a classic 30/30 interval with 9 repeats instead of the 
 10m@100w-190w + 9*(30s@290 + 30s@100w) + 5m@190w-150w| 250w
 ```
 
-Note the factor `9` and the symbol `*` in front of the expression in the brackets. This means that the set described in the brackets should be repeated nine times. Note also that you can specify time not only in minutes using either `m` or `M`, but also in seconds (either `s` or `S`) as well as hours (either `h` or `H`). Times can also be given as a decimal number. The following durations are all the same: 0.5h = 0.5H = 30m = 30M = 1800s = 1800S.
+Note the factor `9` and the symbol `*` in front of the expression in the brackets. This means that the set described in the brackets should be repeated nine times. Note also that you can specify time not only in minutes using either `m` or `M`, but also in seconds (either `s` or `S`) as well as hours (either `h` or `H`). Times can also be given as a decimal number. The following durations are all the same: 0.5h = 0.5H = 30m = 30M = 1800s = 1800S. Yet, durations will always be rounded to integer seconds, that is, although you can write `1.3s` or `1.6s`, these numbers will be rounded in the generated Zwift workout file to `1s` or `2s`, respectively.
 
 Unlike in the Zwift workout editor, you can have intervals with more than two sets and even nested intervals as the following example shows:
 
