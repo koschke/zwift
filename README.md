@@ -23,7 +23,13 @@ The workout specification is textual, more concise and much simpler than a Zwift
 30m@200w | 250w
 ```
 
-The first part `30m@200w` specifies a duration of 30 minutes at 200 watts. The second part `| 250w` declares your FTP value, which would be 250 watts in this example. For the unit of watts, you can use `w` or `W`.
+Isn't that simple? The first part `30m@200w` specifies a duration of 30 minutes at 200 watts. The second part `| 250w` declares your FTP value, which would be 250 watts in this example. For the unit of watts, you can use `w` or `W`.
+
+The blanks in the workout specifications have no meaning and are only a matter of your taste about readability. You could as well write:
+
+```
+30 m @ 200 w|250 w
+```
 
 If you want to start your workout with a warm-up and cool-down phase, you can specify power ranges. Let's assume you want to start by gradually increasing your power from 100 watts to 190 watts over 10 minutes and after your main set of 30 minutes at 200 watts you want to decrease your power from 190 watts down to 150 watts in 5 minutes. You could specify this workout as follows:
 
