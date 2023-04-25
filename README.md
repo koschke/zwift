@@ -1,4 +1,4 @@
-# zwift
+# zwift.py
 A Python script generating a Zwift workout file based on a simple textual workout specification
 
 ## What does this script do?
