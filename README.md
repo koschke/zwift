@@ -44,7 +44,7 @@ As you can see in this example, too, different sets are separated by `+`.
 Now let's assume we want a classic 30/30 interval with 9 repeats instead of the steady 200 watts over 30 minutes. A 30/30 interval is an effort with 30 seconds at high power, let's say 290 watts, followed by a 30-second rest at low power, let's say 100 watts. This can be specified as follows:
 
 ```
-10m@100w-190w + 9*(30s@290 + 30s@100w) + 5m@190w-150w| 250w
+10m@100w-190w + 9*(30s@290w + 30s@100w) + 5m@190w-150w| 250w
 ```
 
 Note the factor `9` and the symbol `*` in front of the expression in the brackets. This means that the set described in the brackets should be repeated nine times. Note also that you can specify time not only in minutes using either `m` or `M`, but also in seconds (either `s` or `S`) as well as hours (either `h` or `H`). Times can also be given as a decimal number. The following durations are all the same: 0.5h = 0.5H = 30m = 30M = 1800s = 1800S. Yet, durations will always be rounded to integer seconds, that is, although you can write `1.3s` or `1.6s`, these numbers will be rounded in the generated Zwift workout file to `1s` or `2s`, respectively.
@@ -52,7 +52,7 @@ Note the factor `9` and the symbol `*` in front of the expression in the bracket
 Unlike in the Zwift workout editor, you can have intervals with more than two sets and even nested intervals as the following example shows:
 
 ```
-2*(5m@180w + 9*(10s@300w + 30s@290 + 30s@100w))| 250w
+2*(5m@180w + 9*(10s@300w + 30s@290w + 30s@100w))| 250w
 ```
 
 This workout consists of two repeats of 5 minutes at 180 watts, followed by a nested interval of nine repeats of a variation of the former 30/30 efforts. The variation starts a little harder with 300 watts for 10 seconds and then eases back to the 290 watts for the remaining 20 seconds before the 30-second rest begins.
@@ -60,7 +60,7 @@ This workout consists of two repeats of 5 minutes at 180 watts, followed by a ne
 This workout is equivalent to:
 
 ```
-5m@180w + 9*(10s@300w + 20s@290 + 30s@100w) + 5m@180w + 9*(10s@300w + 30s@290 + 30s@100w)| 250w
+5m@180w + 9*(10s@300w + 20s@290w + 30s@100w) + 5m@180w + 9*(10s@300w + 30s@290w + 30s@100w)| 250w
 ```
 
 If you want to have a free ride in your workout, you can use `_` instead of a concrete wattage or wattage ramp. To have a 30-minute free ride with no power obligation, you can write:
