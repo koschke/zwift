@@ -25,6 +25,10 @@ I am receiving my bike-workout descriptions from my trainer in a textual descrip
 
 ## How does the workout specification look like?
 
+We will first explain the syntax of a workout specification by examples. After that, a formal definition of the syntax will follow that describes precisely how a valid workout specification must look like.
+
+### The syntax explained by examples.
+
 The workout specification is textual, more concise and much simpler than a Zwift workout file. The most simple kind of workout where you would write 200 watts for 30 minutes would look like this:
 
 ```
@@ -78,6 +82,88 @@ If you want to have a free ride in your workout, you can use `_` instead of a co
 ```
 
 Note that there is no `w` or `W` after the `_`.  Note also that you still need to specify your FTP even though this workout example consists of only a single free ride where an FTP value does not really matter. Yet, you would hardly create a Zwift workout consisting of only free rides, would you? And if there is a concrete power specification, the absolute number must be turned into a relative value for the said technical limitation of the Zwift workout format.
+
+### A precise definition of the syntax for workout specifications
+
+You can skip this section if you are happy with the description by examples given above. However, if the script detects a syntax error in your workout specification and you do not understand what is wrong with it, the following formal definition of the syntax of workout specification may be useful.
+
+Workout specifications are a kind of (artifical) language to be understood by humans and computers. While humans are typically good at tolerating language errors, computers are generally more stubborn in that regard. If `zwift.py` does not understand your workout specification, how could it generate a Zwift workout file for it? 
+
+In computer science, syntax is often defined by [Extended Backus–Naur form, or short: EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form). EBNF is a notation by which the syntax of a textual input to a computer program can be defined. In the following, the syntax a workout specification must conform to will be described using EBNF. I will explain the syntax rules for our workout specifications and EBNF in the following. Have no fear, it is not that difficult. A more complete description of EBNF can be found [here](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form). A footnote to the pedants: I am not using the semicolon at the end of a rule, which would be required according to EBNF.
+
+Let us start with the first syntax rule:
+
+```
+  Workout = Stages FTP
+```
+
+The name `Workout` on the left-hand side of `=` is the name of a syntax rule. Rule names are also known as _Non-Terminals_. The right-hand side of `=` defines the rule. Here we have `Stages` and `FTP`. Both are again non-terminals, that is, other rules. The right-hand side states that any workout description consists of two parts: first, the stages of a workout and then a declaration of the FTP value. Let us first take a look at the rule for `FTP`, simply because it is simpler.
+
+```
+FTP = "|" Integer WUnit
+```
+
+As you have already seen in the examples above, you declare your FTP value at the end of a workout description after a separating `|`. As you will notice, in the syntax rule, the separator `|` is enclosed in quotes. Everything contained in quotes is interpreted as a terminal in EBNF. While non-terminals define rules that have a right-hand side, terminals stand for themselves, in this case simply for the symbol `|`. You will not find any rule with a terminal on the left-hand side of the rule. They can occur only on the right-hand sides.
+
+After the separator `|` follow an `Integer` and the unit for watts defined by `WUnit`. Integers are natural positive numbers - including 0 - without a period. Their syntax is defined by rule `Integer` as follows:
+
+```
+Integer = Digit { Digit }
+```
+
+This rule states that an integer must have at least one digit. After that digit an arbitrarily long sequence of additional digits may follow. To represent repitions in EBNF, expressions may be included in curly braces. Everything enclosed by the curly braces may be repeated arbitrarily often, including not at all. 
+
+The rule for single digits is as follows:
+
+```
+Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+```
+
+The `|` is used in EBNF to separate alternatives from each other. This rule states that a digit is either a `0` or a `1` or a `2` and so on. Mind the difference between this usage of `|` and our usage `"|"` in one of our syntax rules above. The expression `"|"` is a terminal in a workout specification, while `|` without quotes is an alternation in EBNF enlisting multiple alternative expressions.
+
+Now we have seen all constituents for our `FTP` rule. We now come back to the rule `Stages`:
+
+```
+ Stages = Stage { "+" Stage } 
+```  
+
+This rule states that `Stages` forms a list of `Stage` (with at least one `Stage`) separated by a `+` symbol. A stage of a workout is described as follows:
+
+```
+Stage = Integer "*" "(" Stages ")") | Time "@" Watts
+```
+
+Note the EBNF alternation `|` on the right-hand side again. It means that a `Stage` can be either following the syntax `Integer "*" "(" Stages ")")` or the syntax `Time "@" Watts`. The first alternative is intended to define an interval. The `Integer' in front of the `*`
+
+`(30s@300w + 15s@100w)*3`
+
+```
+Time = (Integer | Float) TUnit 
+```
+
+```
+Watts = "_" | Integer WUnit ("-" Integer WUnit)?
+```
+
+```
+WUnit = ("w" | "W")
+```
+
+```
+TUnit = ("m" | "M" | "s" | "S" | "h" | "H")
+```
+
+```
+Integer = ["0"-"9"]+
+```
+
+```
+Float = ["0"-"9"]+ "." ["0"-"9"]*
+```
+
+
+
+
 
 ## What do I need to install on my computer to use the script?
 
@@ -147,4 +233,4 @@ python zwift.py -d "My description" -i myworkout.txt -n "My second workout" -o h
 
 If you do not use this option, `zwift.py` will add your workout specification as a description.
 
-Finally, if you use option `-h`, `zwift.py` will print a description on how it can be called and exits. No Zwift workout file will be generated.
+Finally, if you use option `-h`, `zwift.py` will print its version number and a description on how it can be called and then exits. No Zwift workout file will be generated.
