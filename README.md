@@ -5,6 +5,14 @@ A Python script generating a Zwift workout file based on a simple textual workou
 
 This script generates a [Zwift](https://zwift.com/) workout file taking a simple and concise textual workout specification. The [Zwift](https://zwift.com/) workout file can be read in [Zwift](https://zwift.com/) to control your smart trainer during a workout.
 
+## On which operating systems will this script run?
+
+The script runs on Windows, macOS, and Linux. Technically, it runs on every platform for which a _Python_ interpreter is available (see below).
+
+## Is this script for free?
+
+Yes, absolutely.
+
 ## Why using this script?
 
 The Zwift workout editor allows one to create a customized workout and works fine for simple workouts. Yet, it has limitations. First, the intervals you can create with the editor have only two different stages: low power and high power. Second, copying and pasting and editing in general to create a workout can be cumbersome. 
@@ -77,7 +85,7 @@ This script is written in the programming language _Python_. To be able to execu
 
 You need to install a _Python_ interpreter for _Python_ **version 3.11** on your computer. You can download Python [here](https://www.python.org/downloads/) for a Windows, Linux or a Mac computer at no costs. Make sure that you install version 3.11._X_ where _X_ can be any number (I recommend to install the highest _X_ currently available). 
 
-In addition, to _Python_ you need of course download the script itself that is available (here)[https://github.com/koschke/zwift/blob/main/zwift.py]. You can copy it to any location on your computer's hard disk. Just remember where.
+In addition to _Python_, you need of course to download the script itself that is available [here](https://github.com/koschke/zwift/blob/main/zwift.py). You can copy it to any location on your computer's hard disk. Just remember where. I recommend to copy it to the directory [where the Zwift workouts reside](https://zwiftinsider.com/load-custom-workouts/) (see also below).
 
 That's it. You are good to go.
 
@@ -85,7 +93,7 @@ That's it. You are good to go.
 
 The script has no graphical user interface. It is intended to be run in a command-line shell, for instance, `cmd` on Windows. I assume most people will use a Windows computer. Hence, I will explain how to open the command-line shell `cmd` on Windows. For Mac or Linux computers, you will find help searching in the Internet. There are many ways to open `cmd` on Windows, the most simple one is: Press Windows+R to open the _Run_ box, where you enter `cmd` and then click _OK_. Now a window with a command-line prompt should open where you can enter your commands. You do not need administrator rights to execute the script.
 
-The following description on how to enter your commands is largely independent from your type of computer (Windows, Mac, or Linux), except maybe for directory separators.
+The following description on how to enter your commands is largely independent from your type of computer (Windows, Mac, or Linux), except maybe for directory separators contained in file-path parameters.
 
 Within a command-line shell, _Python_ programs in general can be started by first stating the path to your _Python_ interpreter, then the name of the _Python_ script to be executed, and then the arguments you want to pass to the executed script. Here is how you would run our script:
 
@@ -93,22 +101,44 @@ Within a command-line shell, _Python_ programs in general can be started by firs
 python zwift.py -w "30m@200w | 250w" -n "My first workout" -o workout.zwo
 ```
 
-The first item in this command line is the path to the _Python_ interpreter you just installed. If you opted for adding the _Python_ interpreter to the path where your machine looks up executable programs, you can simply write `python`. If you have not added the _Python_ interpreter to the path of executable programs, you need to specify the full path. On a Windows machine, that could something like that: ``
+The first item in this command line is the path to the _Python_ interpreter you just installed. If you opted during the installation for adding the _Python_ interpreter to the path where your machine looks up executable programs, you can simply write `python`. If you have not added the _Python_ interpreter to the path of executable programs, you need to specify the full path. On a Windows machine, that could be something like that:
 
 ```
 "c:\Program Files\Python311\python.exe" zwift.py -w "30m@200w | 250w" -n "My first workout" -o workout.zwo
 ```
 
-The second item on the command line is our script `zwift.py`. The above command line assumes the script can be found in the current directory. If you copied it to another location on your hard disk, you need again specify the full path of that location.
+The second item on the command line is our script `zwift.py`. The above command line assumes the script can be found in the current directory. If you copied it to another location on your hard disk, you need again to specify the full path of that location.
 
-After the script's path come the arguments to be passed to the script. The first argument introduced by `-w` is a description of the workout as outlined above. You should always put the workout description you are passing on the command line in quotes. The quotes themselves are not part of the workout specification. Instead, that is the way to pass arguments containing blanks and special symbols. For instance, the symbol `|` has a particular meaning and would be interpreted by the command-line interpreter and not by the _Python_ interpreter. Always use quotes. Option `-w "30m@200w | 250w"` instructs the script to generate a Zwift workout file for a 30-minute ride at 200 watts with an FTP value of 250 watts. 
+After the script's path come the arguments to be passed to the script. The first argument introduced by `-w` is a description of the workout as outlined above. You should always put the workout description you are passing on the command line in quotes. The quotes themselves are not part of the workout specification. Instead, that is the way to pass arguments containing blanks or special symbols. For instance, the symbol `|` has a particular meaning and would be interpreted by the command-line shell and not by the _Python_ interpreter. Always use quotes. Option `-w "30m@200w | 250w"` instructs the script to generate a Zwift workout file for a 30-minute ride at 200 watts with an FTP value of 250 watts. 
 
-Every workout needs a unique name. This name will be shown to you when you want to select one of your custom workouts. Note that the filename of a Zwift workout file will not be used as unique name by Zwift; the name of the workout is instead contained in the Zwift workout file. Hence, it must be passed to `zwift.py` so that it can be put into the output. You specify the name with the option `-n` followed by the name. In the above example, `-n "My first workout"` states that _My first workout_ should be the unique name of the workout. Again you should use quotes, unless your title has no blanks and no special symbols.
+Every workout needs a unique name. This name will be shown to you when you want to select one of your custom workouts within Zwift. Note that the filename of a Zwift workout file will not be used as the unique name by Zwift; the name of the workout is instead contained in the Zwift workout file. Hence, it must be passed to `zwift.py` so that it can be put into the output Zwift workout file. You specify the unique name with the option `-n` followed by the name. In the above example, `-n "My first workout"` states that _My first workout_ should be the unique name of the workout. Again you should use quotes, unless your title has no blanks and no special symbols.
 
-The last option in the example above tells `zwift.py` the name of the Zwift workout file that is to be generated. You can select any filename. Note, however, that a file that exists already with this name will be overridden. In the example, `-o workout.zwo` specifies that the output should be written into a file named `workout.zwo`. The file extension `.zwo` is mandatory. Zwift will interpret only files with this file extension as files containing workout descriptions.
-If you do not find your workout in Zwift, the simple reason could be that you did not use the right file extension. Note also that Zwift looks up the workout files only once during start up. If you generate the file while Zwift is running, you will neither find it in its list of workouts. You would need to re-start Zwift.
+The last option in the example above tells `zwift.py` the name of the Zwift workout file that is to be generated. You can select any filename. Note, however, if a file exists already with the chosen name, `zwift.py` will bail out with an error message, because otherwise the existing file would be overridden. If you want to force `zwift.py` to overridde a potentially existing file, you can add option `-f`.
 
-Where to copy the file?
+In the example, `-o workout.zwo` specifies that the output should be written into a file named `workout.zwo`. The file extension `.zwo` is mandatory. Zwift will interpret only files with this file extension as files containing workout descriptions. If you do not find your workout in Zwift, the simple reason could be that you did not use the right file extension. Note also that Zwift looks up the workout files only once during start up. If you generate the file while Zwift is already running, you will neither find it in its list of workouts. You would then need to re-start Zwift.
+
+Zwift looks up all its workout files in a particular directory. The path of this directory depends upon your operating system (Windows or MacOS) and your Zwift ID. [This web page](https://zwiftinsider.com/load-custom-workouts/) explains how to determine this directory. I recommend you put the script `zwift.py` in the very same directory so that you do not need to pass more than the filename to `zwift.py` via option `-o`.
+
+Instead of passing a workout description as a parameter to `zwift.py`, you can as well put it in a file and then pass the filename instead via option `-i`. That is particularly handy if you want to have a record of your workout description or if your workout description is very long and you want to break it into multiple lines.
+
+For instance, you can have a file named _myworkout.txt_ with the following content:
+
+```
+5m@180w 
++ 9*(10s@300w + 20s@290w + 30s@100w) 
++ 5m@180w 
++ 9*(10s@300w + 30s@290w + 30s@100w)
+| 250w
+```
+
+Then you can pass this file to `zwift.py` as argument `-i` as follows:
+
+```
+python zwift.py -i myworkout.txt -n "My second workout" -o hardworkout.zwo
+```
+
+The name of file containing the workout specification follows option `-f`. The name and its file extension can be freely chosen. Note that you need to use either `-w` or `-i`.
+
 
 
 
