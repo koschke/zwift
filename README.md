@@ -133,36 +133,43 @@ This rule states that `Stages` forms a list of `Stage` (with at least one `Stage
 Stage = Integer "*" "(" Stages ")") | Time "@" Watts
 ```
 
-Note the EBNF alternation `|` on the right-hand side again. It means that a `Stage` can be either following the syntax `Integer "*" "(" Stages ")")` or the syntax `Time "@" Watts`. The first alternative is intended to define an interval. The `Integer' in front of the `*`
+Note the EBNF alternation `|` on the right-hand side again. It means that a `Stage` can be either following the syntax `Integer "*" "(" Stages ")")` or the syntax `Time "@" Watts`. The first alternative is intended to define an interval. The `Integer` in front of the `*` symbol is the number of repetitions of the interval. The intervals themselves are described by the expression contained in the braces `(` and `)`. Here we use the non-terminal `Stages` again, that is, again a list of stages separated by `+` is expected, where at least one `Stage` must occur. The attentive reader may have noticed that we could in fact write `3*(5m@200w) | 290w`, that is, there is only one stage in the interval. This would be equivalent to `15m@200w | 290w`. Given the rule for `Integer`and `Digit, you could even write: `0*(5m@200w) | 290w`, which would result in an empty workout. The zero repetition does not make much sense in this example, but sometimes, a zero may become handy, for instance, for temporarily disabling a repitition in a larger interval. As the first alternative of `Stage` explains, too, the factor of the repititions must come in front of the braces. Accordingly, it would illegal to write `(5m@200w)*3`.
 
-`(30s@300w + 15s@100w)*3`
+Now to the other alternative for `Stage`, namely `Time "@" Watts`. This alternative states that first a measure of time and then the target watts separated by `@` must be given. We will first look into `Time`:
 
 ```
 Time = (Integer | Float) TUnit 
 ```
 
+In this rule, again alternatives are given (`Integer` or `Float`), but this time the two alternatives are enclosed in braces (again not be confused with our use of braces above - `"("` and `")"` - which are meant to be terminals in workout specifications). The braces `(` and `")"` are used as groupings in EBNF. The expression `(Integer | Float)` means either an `Integer` or `Float` must occur. After these a `TUnit` must follow. We have seen the rule for `Integer` already.  A `Float` consists of two integers separated by a period as follows:
+
 ```
-Watts = "_" | Integer WUnit ("-" Integer WUnit)?
+Float = Integer "." Integer
 ```
+
+A `TUnit` is a measure for time as follows (i.e, minutes, seconds, or hours):
+
+```
+TUnit = "m" | "M" | "s" | "S" | "h" | "H"
+```
+
+The rule `Watts` is intended for defining the target power of a stage.
+
+```
+Watts = Integer WUnit [ "-" Integer WUnit ] | "_"
+```
+
+As you have seen in the examples above, watts can be specified as a single value such as `300w` or as a range such as `190w - 300w`. This is defined by the first alternative of the right-hand side of rule `Watts`, namely `Integer WUnit [ "-" Integer WUnit ]`. The square brackets `[` and `]` enclose optional expressions, that is, they may or may not occur. The same could be specified as `Integer WUnit | Integer WUnit "-" Integer WUnit`. Beyond any fixed target watt, Zwift also allows you to ride on your own where the smarttrainer would not control the resistance. The other alternative `"_"` states exactly that: free ride. Note that `"_"` is not followed by `WUnit`. `WUnit` is the unit for watts: 
 
 ```
 WUnit = ("w" | "W")
 ```
 
-```
-TUnit = ("m" | "M" | "s" | "S" | "h" | "H")
-```
+Thus, a free ride `_` must not be followed by either `w` or `W`.
 
-```
-Integer = ["0"-"9"]+
-```
+That ends our formal description of workout specification. Thanks for bearing with me. You might find these explanations boring or complicated, but they are good to know when things go wrong and `zwift.py` complains about a syntax error in your workout specification.
 
-```
-Float = ["0"-"9"]+ "." ["0"-"9"]*
-```
-
-
-
+EXPLAIN SYNTAX ERROR REPORT
 
 
 ## What do I need to install on my computer to use the script?
