@@ -139,6 +139,12 @@ python zwift.py -i myworkout.txt -n "My second workout" -o hardworkout.zwo
 
 The name of file containing the workout specification follows option `-f`. The name and its file extension can be freely chosen. Note that you need to use either `-w` or `-i`.
 
+Beyond the unique name, you can also add a description to your workout. This description will be shown to you when you select the workout in Zwift. To add a description, use option `-d` followed by the text of the description in quotes. Here is an example:
 
+```
+python zwift.py -d "My description" -i myworkout.txt -n "My second workout" -o hardworkout.zwo
+```
 
+If you do not use this option, `zwift.py` will add your workout specification as a description.
 
+Finally, if you use option `-h`, `zwift.py` will print a description on how it can be called and exits. No Zwift workout file will be generated.
