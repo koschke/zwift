@@ -167,10 +167,12 @@ WUnit = ("w" | "W")
 
 Thus, a free ride `_` must not be followed by either `w` or `W`.
 
-That ends our formal description of workout specification. Thanks for bearing with me. You might find these explanations boring or complicated, but they are good to know when things go wrong and `zwift.py` complains about a syntax error in your workout specification.
+That ends our formal description of workout specification. Thanks for bearing with me. You might find these explanations boring or complicated, but they are good to know when things go wrong and `zwift.py` complains about a syntax error in your workout specification ([see also below](#how-do-I-read-syntax-error-reports).
+
+### How do I read syntax error reports?
+
 
 EXPLAIN SYNTAX ERROR REPORT
-
 
 ## What do I need to install on my computer to use the script?
 
