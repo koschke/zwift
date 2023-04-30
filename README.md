@@ -35,7 +35,7 @@ The workout specification is textual, more concise and much simpler than a Zwift
 30m@200w | 250w
 ```
 
-Isn't that simple? The first part `30m@200w` specifies a duration of 30 minutes at 200 watts. The second part `| 250w` declares your FTP value, which would be 250 watts in this example. For the unit of watts, you can use `w` or `W`. Power data must always integer values, that is, you must not use a decimal point. For instance, `100.5w` is invalid.
+Isn't that simple? The first part `30m@200w` specifies a duration of 30 minutes at 200 watts. The second part `| 250w` declares your FTP value, which would be 250 watts in this example. The FTP value in a workout specification should match the FTP value that you set in Zwift. For the unit of watts, you can use `w` or `W`. Power data must always be integer values, that is, you must not use a decimal point. For instance, `100.5w` is invalid.
 
 The blanks in the workout specifications have no meaning and are only a matter of your taste about readability. You could as well write:
 
