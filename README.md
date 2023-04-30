@@ -7,7 +7,7 @@ This script generates a [Zwift](https://zwift.com/) workout file taking a simple
 
 ## On which operating systems will this script run?
 
-The script runs on Windows, macOS, and Linux. Technically, it runs on every platform for which a _Python_ interpreter is available (see below).
+The script runs on Windows, macOS, and Linux. Technically, it runs on every platform for which a _Python_ interpreter is available ([see below](#what-do-i-need-to-install-on-my-computer-to-use-the-script)).
 
 ## Is this script for free?
 
@@ -167,12 +167,7 @@ WUnit = ("w" | "W")
 
 Thus, a free ride `_` must not be followed by either `w` or `W`.
 
-That ends our formal description of workout specification. Thanks for bearing with me. You might find these explanations boring or complicated, but they are good to know when things go wrong and `zwift.py` complains about a syntax error in your workout specification ([see also below](#how-do-I-read-syntax-error-reports).
-
-### How do I read syntax error reports?
-
-
-EXPLAIN SYNTAX ERROR REPORT
+That ends our formal description of workout specification. Thanks for bearing with me. You might find these explanations boring or complicated, but they are good to know when things go wrong and `zwift.py` complains about a syntax error in your workout specification ([see also below](#how-do-I-read-syntax-error-reports)).
 
 ## What do I need to install on my computer to use the script?
 
@@ -243,3 +238,9 @@ python zwift.py -d "My description" -i myworkout.txt -n "My second workout" -o h
 If you do not use this option, `zwift.py` will add your workout specification as a description.
 
 Finally, if you use option `-h`, `zwift.py` will print its version number and a description on how it can be called and then exits. No Zwift workout file will be generated.
+
+
+## How do I read syntax error reports?
+
+
+EXPLAIN SYNTAX ERROR REPORT
