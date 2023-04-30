@@ -242,5 +242,42 @@ Finally, if you use option `-h`, `zwift.py` will print its version number and a 
 
 ## How do I read syntax error reports?
 
+The script `zwift.py` parses your workout specification from left to right. At the first element of the processed input that must not occur given the input understood so far, it will report a syntax error. 
+
+There are two kinds of syntax errors: (1) the processed workout specification contains a character that must never occur or (2) an element occurs that may in principle occur in a workout specification but not after the input processed so far.
+
+As an example of the first category, let us assume we have the following invalid workout specification where we wrongly wrote `#` instead of the intended `-`:
+
+```
+"10m@180w + 20m@190w#200w | 290w"
+```
+
+The syntax report would then look like this:
+
+```
+#200w | 290w
+Unrecognized character '#'
+```
+
+The first line is the remaining part of the workout specification not yet successfully processed. The point where the syntax problem occurs is the first character of that line. The second line describes the problem and tells you that `#` may never occur in a workout specification.
+
+As an example of the second category, let us assume we forget the power unit and wrote:
+
+```
+"10m@180w + 20m@190w-200 | 290w"
+```
+
+The syntax report would then look like this:
+
+```
+| 290 w
+w expected
+```
+
+
+The report tells you the possible element or elements that would be expected given the current input so as to conform to the formal definition of the syntax for workout specification along with the remaining part of 
+
+
+telling you the next item it expects having understood the workout specification so far (it is reading the workout specification from left to right)
 
 EXPLAIN SYNTAX ERROR REPORT
