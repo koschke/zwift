@@ -244,7 +244,7 @@ Finally, if you use option `-h`, `zwift.py` will print its version number and a 
 
 The script `zwift.py` parses your workout specification from left to right. At the first element of the processed input that must not occur given the input understood so far, it will report a syntax error. 
 
-There are two kinds of syntax errors: (1) the processed workout specification contains a character that must never occur or (2) an element occurs that may in principle occur in a workout specification but not after the input processed so far.
+There are two kinds of syntax errors: (1) the processed workout specification contains a character that must never occur no matter where in a workout specification or (2) an element occurs that may in principle occur in a workout specification but not after the input processed so far.
 
 As an example of the first category, let us assume we have the following invalid workout specification where we wrongly wrote `#` instead of the intended `-`:
 
