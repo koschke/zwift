@@ -274,10 +274,5 @@ The syntax report would then look like this:
 w expected
 ```
 
+Again, the first line is the remaining part of the workout specification not yet successfully processed where the first element is the point of the input not expected given the workout specification processed so far. The second line of the report tells you the possible element or set of elements that would be expected given the current input so as to conform to the formal definition of the syntax for workout specification along with the remaining part of the workout specification not yet processed.
 
-The report tells you the possible element or elements that would be expected given the current input so as to conform to the formal definition of the syntax for workout specification along with the remaining part of 
-
-
-telling you the next item it expects having understood the workout specification so far (it is reading the workout specification from left to right)
-
-EXPLAIN SYNTAX ERROR REPORT
