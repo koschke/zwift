@@ -43,6 +43,14 @@ The blanks in the workout specifications have no meaning and are only a matter o
 30 m @ 200 w|250 w
 ```
 
+You can also specify an optional target cadence range for an effort as follows:
+
+```
+30m@200w/80c-90c | 250w
+```
+
+In that example, your cadence during the 30-minute effort at 200 watts should be in the range of 80 and 90 rpms (revolutions per minute).
+
 If you want to start your workout with a warm-up and cool-down phase, you can specify power ranges. Let's assume you want to start by gradually increasing your power from 100 watts to 190 watts over 10 minutes and after your main set of 30 minutes at 200 watts you want to decrease your power from 190 watts down to 150 watts in 5 minutes. You could specify this workout as follows:
 
 ```
@@ -130,12 +138,12 @@ Now we have seen all constituents for our `FTP` rule. We now come back to the ru
 This rule states that `Stages` forms a list of `Stage` (with at least one `Stage`) separated by a `+` symbol. A stage of a workout is described as follows:
 
 ```
-Stage = (Integer "*" "(" Stages ")") | (Time "@" Watts)
+Stage = (Integer "*" "(" Stages ")") | (Time "@" Effort)
 ```
 
-Note the EBNF alternation `|` on the right-hand side again. It means that a `Stage` can be either following the syntax `Integer "*" "(" Stages ")"` or the syntax `Time "@" Watts` (the outer braces `(` and `)` are used as a grouping for the two alternatives separated by `|`). The first alternative is intended to define an interval. The `Integer` in front of the `*` symbol is the number of repetitions of the interval. The intervals themselves are described by the expression contained in the braces `(` and `)` (referred to as terminals `"("` and `")"` in the rule). Here we use the non-terminal `Stages` again, that is, again a list of stages separated by `+` is expected, where at least one `Stage` must occur. The attentive reader may have noticed that we could in fact write `3*(5m@200w) | 290w`, that is, there is only one stage in the interval. This would be equivalent to `15m@200w | 290w`. Given the rule for `Integer`and `Digit`, you could even write: `0*(5m@200w) | 290w`, which would result in an empty workout. The zero repetition does not make much sense in this example, but sometimes, a zero may become handy, for instance, for temporarily disabling a repitition in a larger interval. As the first alternative of `Stage` explains, too, the factor of the repititions must come in front of the braces. Accordingly, it would be illegal to write `(5m@200w)*3`.
+Note the EBNF alternation `|` on the right-hand side again. It means that a `Stage` can be either following the syntax `Integer "*" "(" Stages ")"` or the syntax `Time "@" Effort` (the outer braces `(` and `)` are used as a grouping for the two alternatives separated by `|`). The first alternative is intended to define an interval. The `Integer` in front of the `*` symbol is the number of repetitions of the interval. The intervals themselves are described by the expression contained in the braces `(` and `)` (referred to as terminals `"("` and `")"` in the rule). Here we use the non-terminal `Stages` again, that is, again a list of stages separated by `+` is expected, where at least one `Stage` must occur. The attentive reader may have noticed that we could in fact write `3*(5m@200w) | 290w`, that is, there is only one stage in the interval. This would be equivalent to `15m@200w | 290w`. Given the rule for `Integer`and `Digit`, you could even write: `0*(5m@200w) | 290w`, which would result in an empty workout. The zero repetition does not make much sense in this example, but sometimes, a zero may become handy, for instance, for temporarily disabling a repitition in a larger interval. As the first alternative of `Stage` explains, too, the factor of the repititions must come in front of the braces. Accordingly, it would be illegal to write `(5m@200w)*3`.
 
-Now to the other alternative for `Stage`, namely `Time "@" Watts`. This alternative states that first a measure of time and then the target watts separated by `@` must be given. We will first look into `Time`:
+Now to the other alternative for `Stage`, namely `Time "@" Effort`. This alternative states that first a measure of time and then the target effort separated by `@` must be given. We will first look into `Time`:
 
 ```
 Time = (Integer | Float) TUnit 
@@ -153,6 +161,14 @@ A `TUnit` is a measure for time as follows (i.e, minutes, seconds, or hours):
 TUnit = "m" | "M" | "s" | "S" | "h" | "H"
 ```
 
+The rule `Effort` prescribes the target power and cadence range of a stage.
+
+```
+Effort = Watts ("/" CadenceRange)?
+```
+
+The force (power) of the effort is defined in rule `Watts`, following below. The force must always be specified, unlike the cadence target range. The latter part of the rule above, namely, `"/" CadenceRange` is put in a pair of brackets followed by a question mark. That means, the expression in the brackets are optional, they may or may not be present. If a cadence range is present, it must be separated by `/` from the `Watts`.
+
 The rule `Watts` is intended for defining the target power of a stage.
 
 ```
@@ -166,6 +182,26 @@ WUnit = ("w" | "W")
 ```
 
 Thus, a free ride `_` must not be followed by either `w` or `W`.
+
+A cadence range is defined by a lower and upper value according to the following syntax rule:
+
+```
+CadenceRange = Integer "CUnit" "-" Integer "CUnit"
+```
+
+The first integer specifies the lower cadence and the second integer the upper cadence. The value of the lower cadence must not be less than the value of the upper cadence. You always need to specify both separated by a `-`.
+
+The unit for a cadence is defined as follows:
+
+```
+CUnit = "c" | "C"
+```
+
+The following is an example of a workout with a cadence range:
+
+```
+10m@220w/80c-90c | 250w
+```
 
 That ends our formal description of workout specification. Thanks for bearing with me. You might find these explanations boring or complicated, but they are good to know when things go wrong and `zwift.py` complains about a syntax error in your workout specification ([see also below](#how-do-I-read-syntax-error-reports)).
 

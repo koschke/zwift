@@ -7,16 +7,19 @@
 #  Integer = Digit { Digit }
 #  Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 #  Stages = Stage { "+" Stage }
-#  Stage = Integer "*" "(" Stages ")") | Time "@" Watts
+#  Stage = Integer "*" "(" Stages ")") | Time "@" Effort
 #  Time = (Integer | Float) TUnit
 #  Float = Integer "." Integer
 #  TUnit = "m" | "M" | "s" | "S" | "h" | "H"
+#  Effort = Watts ("/" Cadence "-" Cadence)?
 #  Watts = Integer WUnit [ "-" Integer WUnit ] | "_"
 #  WUnit = ("w" | "W")
+#  Cadence = Integer CUnit
+#  CUnit = ("c" | "C")
 
 # MIT License
 #
-# Copyright (c) 2023 Rainer Koschke
+# Copyright (c) 2023-2024 Rainer Koschke
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +48,7 @@ from typing import List
 from datetime import timedelta
 from os.path import exists
 
-VERSION: str = "1.0"
+VERSION: str = "1.1"
 """
 The version of this script.
 """
@@ -62,9 +65,11 @@ class TokenType(str, Enum):
     ClosingBracket = ")",
     Pipe = "|",
     At = "@",
+    Slash = "/",
     Float = "Float",
     Integer = "Integer",
     Watt = "w",
+    Cadence = "c",
     Hour = "h",
     Minute = "m",
     Second = "s",
@@ -106,6 +111,17 @@ class Treatment:
     """
     The duration of the treatment in seconds.
     """
+    lower_cadence: int = 0
+    """
+    The lower value of the target cadence range. Cannot be less than 0.
+    """
+    upper_cadence: int = 0
+    """
+    The upper value of the target cadence range. Cannot be less than 0.
+    Cannot be less than lower_cadence.
+    If lower_cadence and upper_cadence are both 0, a cadence range will
+    not be emitted.
+    """
 
     def __str__(self) -> str:
         """
@@ -123,6 +139,15 @@ class Treatment:
         """
         print("", file=file)
 
+    def cadence_to_zwift(self) -> str:
+        """
+        :return:
+        """
+        if self.lower_cadence == 0 and self.upper_cadence == 0:
+            return ""
+        else:
+            return f" CadenceLow=\"{str(self.lower_cadence)}\" CadenceHigh=\"{str(self.upper_cadence)}\""
+
 
 class Free(Treatment):
     """
@@ -134,7 +159,7 @@ class Free(Treatment):
         Yields a human-readable representation of this treatment.
         :return: a human-readable representation of this treatment
         """
-        return f"free({str(self.seconds)}s)"
+        return f"free({str(self.seconds)}s {str(self.lower_cadence)}c-{str(self.upper_cadence)}c)"
 
     def to_zwift(self, file: typing.TextIO, ftp: float) -> None:
         """
@@ -143,7 +168,7 @@ class Free(Treatment):
         :param ftp: the user's FTP value
         :return: None
         """
-        print(f"     <Freeride Duration=\"{self.seconds}\"/>", file=file)
+        print(f"     <Freeride Duration=\"{self.seconds}\"{self.cadence_to_zwift()}/>", file=file)
 
 
 class Power(Treatment):
@@ -167,7 +192,8 @@ class Power(Treatment):
         Yields a human-readable representation of this treatment.
         :return: a human-readable representation of this treatment
         """
-        return f"power({str(self.seconds)}s, {str(self.wattage)}w)"
+        return f"power({str(self.seconds)}s, {str(self.wattage)}w " \
+               f"{str(self.lower_cadence)}c-{str(self.upper_cadence)}c))"
 
     def to_zwift(self, file: typing.TextIO, ftp: float) -> None:
         """
@@ -176,8 +202,8 @@ class Power(Treatment):
         :param ftp: the user's FTP value
         :return: None
         """
-        print(f"     <SteadyState Duration=\"{self.seconds}\" Power=\"{relative(self.wattage, ftp)}\" pace=\"0\"/>",
-              file=file)
+        print(f"     <SteadyState Duration=\"{self.seconds}\" Power=\"{relative(self.wattage, ftp)}\""
+              + f"{self.cadence_to_zwift()} pace=\"0\"/>", file=file)
 
 
 class Range(Treatment):
@@ -208,7 +234,8 @@ class Range(Treatment):
         Yields a human-readable representation of this treatment.
         :return: a human-readable representation of this treatment
         """
-        return f"power({str(self.seconds)}s, {str(self.start_wattage)}w-{str(self.end_wattage)}w)"
+        return f"power({str(self.seconds)}s, {str(self.start_wattage)}w-{str(self.end_wattage)}w " \
+               f"{str(self.lower_cadence)}c-{str(self.upper_cadence)}c)"
 
     def to_zwift(self, file: typing.TextIO, ftp: float) -> None:
         """
@@ -221,11 +248,13 @@ class Range(Treatment):
         """
         if self.start_wattage <= self.end_wattage:
             print(f"     <Warmup Duration=\"{self.seconds}\" PowerLow=\"{relative(self.start_wattage, ftp)}\""
-                  + f" PowerHigh=\"{relative(self.end_wattage, ftp)}\" pace=\"0\"/>",
+                  + f" PowerHigh=\"{relative(self.end_wattage, ftp)}\""
+                  + f"{self.cadence_to_zwift()} pace=\"0\"/>",
                   file=file)
         else:
             print(f"     <Cooldown Duration=\"{self.seconds}\" PowerLow=\"{relative(self.end_wattage, ftp)}\""
-                  + f" PowerHigh=\"{relative(self.start_wattage, ftp)}\" pace=\"0\"/>",
+                  + f" PowerHigh=\"{relative(self.start_wattage, ftp)}\""
+                  + f"{self.cadence_to_zwift()} pace=\"0\"/>",
                   file=file)
 
 
@@ -384,7 +413,7 @@ def parse_stages(tokens: List[Token]) -> (List[Token], List[Treatment]):
 
 def parse_stage(tokens: List[Token]) -> (List[Token], List[Treatment]):
     """
-    Parses given tokens according to the rule 'Integer "*" "(" Stages ")") | Time "@" Watts'.
+    Parses given tokens according to the rule 'Integer "*" "(" Stages ")") | Time "@" Effort'.
     :param tokens: token stream not yet parsed
     :return: the tail of tokens not consumed by this parse and the treatments parsed successfully
     """
@@ -400,7 +429,7 @@ def parse_stage(tokens: List[Token]) -> (List[Token], List[Treatment]):
         tokens, seconds = parse_time(tokens)
         tokens = expect(TokenType.At, tokens)
         treatment: Treatment
-        tokens, treatment = parse_watts(tokens)
+        tokens, treatment = parse_effort(tokens)
         treatment.seconds = seconds
         return tokens, [treatment]
     else:
@@ -432,6 +461,18 @@ def parse_time(tokens: list[Token]) -> (list[Token], int):
         error("Number expected.")
 
 
+def parse_effort(tokens: List[Token]) -> (List[Token], Treatment):
+    """
+    Parses given tokens according to rule 'Watts ("/" Cadence "-" Cadence)?'
+    :param tokens: token stream not yet parsed
+    :return: the tail of tokens not consumed by this parse and the treatment parsed
+    """
+    tokens, treatment = parse_watts(tokens)
+    if tokens[0].type == TokenType.Slash:
+        tokens, treatment = parse_cadence_range(tokens, treatment)
+    return tokens, treatment
+
+
 def parse_watts(tokens: List[Token]) -> (List[Token], Treatment):
     """
     Parses given tokens according to the rule 'Integer WUnit [ "-" Integer WUnit ] | "_"'.
@@ -455,6 +496,39 @@ def parse_watts(tokens: List[Token]) -> (List[Token], Treatment):
             return tokens, Range(value, end_value)
         else:
             return tokens, Power(value)
+    else:
+        error("Integer expected.")
+
+
+def parse_cadence_range(tokens: List[Token], treatment: Treatment) -> (List[Token], Treatment):
+    """
+    Parses given tokens according to the rule '"/" Cadence "-" Cadence'.
+    :param treatment: the input treatment where the lower and upper cadences are to be added
+    :param tokens: token stream not yet parsed
+    :return: the tail of tokens not consumed by this parse and the input treatment enhanced by the cadence parsed
+    """
+    tokens = expect(TokenType.Slash, tokens)
+    tokens, lower_cadence = parse_cadence(tokens)
+    # Note: An Integer cannot be less than 0.
+    tokens = expect(TokenType.Minus, tokens)
+    tokens, upper_cadence = parse_cadence(tokens)
+    if lower_cadence > upper_cadence:
+        error("Lower cadence exceeds upper cadence.")
+    treatment.lower_cadence = lower_cadence
+    treatment.upper_cadence = upper_cadence
+    return tokens, treatment
+
+
+def parse_cadence(tokens: List[Token]) -> (List[Token], int):
+    """
+    Parses given tokens according to the rule 'Integer "c" | "C")'.
+    :param tokens: token stream not yet parsed
+    :return: the tail of tokens not consumed by this parse and the cadence parsed
+    """
+    if tokens[0].type == TokenType.Integer:
+        value: int = int(tokens[0].value)
+        tokens = expect(TokenType.Cadence, tokens[1:])
+        return tokens, value
     else:
         error("Integer expected.")
 
@@ -548,8 +622,12 @@ def tokenize(input_data: str) -> List[Token]:
                     result.append(Token(TokenType.Pipe))
                 case '@':
                     result.append(Token(TokenType.At))
+                case '/':
+                    result.append(Token(TokenType.Slash))
                 case 'w' | 'W':
                     result.append(Token(TokenType.Watt))
+                case 'c' | 'C':
+                    result.append(Token(TokenType.Cadence))
                 case 'h' | 'H':
                     result.append(Token(TokenType.Hour))
                 case 'm' | 'M':
